@@ -16,7 +16,14 @@ OR- if you need the container to have the host docker acess
 ```bash
 docker run -d --name jenkins-master -p 8080:8080 -p 50000:50000 -v jenkins_home:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock --network jenkins-network jenkins/jenkins:lts
 ```
+If doing the docker acess make sure you put these commands
 
+```bash
+docker exec -it jenkins-master bash
+apt-get update
+apt-get install -y docker.io
+exit
+```
 ### NOW visit the [localhost:8080](http://localhost:8080/)
 ## You will be prompted for the password 
 ![alt text](images/image.png)
@@ -81,7 +88,17 @@ wait for some time .. until the installation is done
 ```bash 
 sudo docker run -d --name jenkins-agent -e JENKINS_URL=http://jenkins-master:8080/ -e JENKINS_AGENT_NAME=docker-agent -e JENKINS_SECRET=<secret-key> --network jenkins-network -u root jenkins/inbound-agent
 ```
-
+OR- if you want agen to have docker access 
+```bash
+sudo docker run -d --name jenkins-agent -e JENKINS_URL=http://jenkins-master:8080/ -e JENKINS_AGENT_NAME=docker-agent -e JENKINS_SECRET=<secret-key> -v /var/run/docker.sock:/var/run/docker.sock --network jenkins-network -u root jenkins/inbound-agent
+```
+if doing the docker acess step for docker agent then
+```bash
+docker exec -it jenkins-agent bash
+apt-get update
+apt-get install -y docker.io
+exit
+```
 ### get inside the container 
 ```bash
 sudo docker exec -it jenkins-agent bash
