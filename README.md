@@ -12,6 +12,10 @@ sudo docker network create jenkins-network
 ```bash
 sudo docker run -d -p 8080:8080 -p 50000:50000 -v jenkins_home:/var/jenkins_home --name jenkins-master --network jenkins-network -u root jenkins/jenkins:lts
 ```
+OR- if you need the container to have the host docker acess
+```bash
+docker run -d --name jenkins-master -p 8080:8080 -p 50000:50000 -v jenkins_home:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock --network jenkins-network jenkins/jenkins:lts
+```
 
 ### NOW visit the [localhost:8080](http://localhost:8080/)
 ## You will be prompted for the password 
