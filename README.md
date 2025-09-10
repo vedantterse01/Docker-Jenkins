@@ -98,3 +98,41 @@ java -jar agent.jar -url http://host.docker.internal:8080/ -secret <secret-key> 
 ## CONFIGURE > NUMBER OF EXECUTORS  | SET IT TO > 0 
 </li>
 </ol>
+
+--------
+
+## OPTIONAL TOMCAT SERVER SETUP 
+
+```bash
+docker run -d --name tomcat-server --network jenkins-network -p 8090:8080 tomcat:latest
+```
+```bash
+docker cp tomcat-server:/usr/local/tomcat/webapps.dist/manager ./manager
+docker cp ./manager tomcat-server:/usr/local/tomcat/webapps/
+docker cp tomcat-server:/usr/local/tomcat/webapps.dist/host-manager ./host-manager
+docker cp ./host-manager tomcat-server:/usr/local/tomcat/webapps/
+```
+### ENTER INSIDE THE CONTAINER 
+```bash
+docker exec -it -u root tomcat-server bash
+```
+```bash
+cd conf/
+```
+
+```bash
+sed -i '/<\/tomcat-users>/i \
+  <role rolename="manager-gui"/>\n\
+  <role rolename="manager-script"/>\n\
+  <role rolename="manager-jmx"/>\n\
+  <role rolename="manager-status"/>\n\
+  <user username="admin" password="admin" roles="manager-gui, manager-script, manager-jmx, manager-status"/>\n\
+  <user username="deployer" password="deployer" roles="manager-script"/>\n\
+  <user username="tomcat" password="s3cret" roles="manager-gui"/>' /usr/local/tomcat/conf/tomcat-users.xml
+```
+```bash
+exit
+```
+```bash
+docker restart tomcat-server
+```
